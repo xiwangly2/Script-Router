@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Script-Router Linux" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="Script-Router" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-o out\Script-Router" />
+    <envs>
+      <env name="GOARCH" value="amd64" />
+      <env name="GOOS" value="linux" />
+    </envs>
+    <kind value="DIRECTORY" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/main.go" />
+    <output_directory value="$PROJECT_DIR$/out" />
+    <option name="run" value="false" />
+    <method v="2" />
+  </configuration>
+</component>
