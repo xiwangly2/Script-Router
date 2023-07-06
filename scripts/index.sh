@@ -1,6 +1,7 @@
 #!/bin/bash
 
-download_url="http://192.168.85.1:8080/"
+# 这里可能需要重新指定URL
+download_url="http://192.168.85.1/"
 
 # 检查系统是否安装了curl或wget
 if command -v curl >/dev/null 2>&1; then
@@ -35,16 +36,16 @@ case $choice in
     ./install.sh
     ;;
   3)
-      # 从远程下载install.sh脚本并执行
-      $download_command install.sh "${download_url}install.sh"
-      chmod +x uninstall.sh
-      ./install.sh
+      # 从远程下载update.sh脚本并执行
+      $download_command update.sh "${download_url}update.sh"
+      chmod +x update.sh
+      ./update.sh
       ;;
   4)
-      # 从远程下载install.sh脚本并执行
-      $download_command install.sh "${download_url}install.sh"
-      chmod +x install.sh
-      ./install.sh
+      # 从远程下载uninstall.sh脚本并执行
+      $download_command uninstall.sh "${download_url}uninstall.sh"
+      chmod +x uninstall.sh
+      ./uninstall.sh
       ;;
   *)
     echo "无效的选项"
