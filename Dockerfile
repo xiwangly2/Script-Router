@@ -11,7 +11,7 @@ COPY . .
 RUN go build -o "Script-Router"
 
 # 阶段二：运行阶段
-FROM scratch
+FROM alpine:latest
 
 # 从第一阶段中复制生成的可执行文件到当前容器
 COPY --from=builder "/app/Script-Router" "/app/Script-Router"
