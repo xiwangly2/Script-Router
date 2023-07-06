@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -12,9 +14,16 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 	if requestSource == "curl" || requestSource == "wget" {
 		// 如果是通过curl或wget访问，则输出shell文件
+		scriptContent, err := ioutil.ReadFile("scripts/index.sh")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "Internal Server Error")
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.Header().Set("Content-Disposition", "attachment; filename=shell.sh")
-		fmt.Fprint(w, "# 在这里写入你的shell脚本内容")
+		fmt.Fprint(w, string(scriptContent))
 		return
 	}
 
@@ -37,5 +46,14 @@ func getRequestSource(r *http.Request) string {
 
 func main() {
 	http.HandleFunc("/", handleRequest)
-	http.ListenAndServe(":8080", nil)
+
+	// 选择要监听的地址和端口
+	addr := "0.0.0.0:8080"
+
+	fmt.Printf("Server is listening on %s\n", addr)
+
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
