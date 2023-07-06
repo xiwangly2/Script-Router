@@ -69,7 +69,7 @@ func main() {
 
 	// 选择要监听的地址和端口
 	// 建议使用其他的端口避免冲突
-	addr := "0.0.0.0:80"
+	addr := "0.0.0.0:8080"
 
 	fmt.Printf("Server is listening on %s\n", addr)
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 这里可能需要重新指定URL
-download_url="http://192.168.85.1/"
+download_url="http://vs8.top/"
 
 # 检查系统是否安装了curl或wget
 if command -v curl >/dev/null 2>&1; then
