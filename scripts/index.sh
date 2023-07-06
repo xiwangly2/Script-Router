@@ -1,31 +1,53 @@
-#!/bin/sh
-# 原始架构信息
-get_arch="$(arch)";
-if [[ $? != 0 ]];then get_arch=$(uname -m);fi;
-# 架构别名
-# 对应：kms
-if [[ $get_arch =~ "x86_64" ]];then
-    use_arch="amd64";
-elif [[ $get_arch =~ "aarch64" ]];then
-    use_arch="arm64";
-elif [[ $get_arch =~ "arm" ]];then
-    use_arch="armv7";
-elif [[ $get_arch =~ "mips64" ]];then
-    use_arch="mips64";
-elif [[ $get_arch =~ "mips" ]];then
-    use_arch="mips";
-elif [[ $get_arch =~ "i686" ]];then
-    use_arch="686";
-elif [[ $get_arch =~ "i386" ]];then
-    use_arch="386";
-elif [[ $get_arch =~ "alpha" ]];then
-    use_arch="alpha";
-elif [[ $get_arch =~ "x86" ]];then
-    use_arch="386";
-elif [[ $get_arch =~ "wasm32" ]];then
-    use_arch="wasm32";
+#!/bin/bash
+
+download_url="http://192.168.85.1:8080/"
+
+# 检查系统是否安装了curl或wget
+if command -v curl >/dev/null 2>&1; then
+  # 使用curl从远程获取脚本
+  download_command="curl -sSo"
+elif command -v wget >/dev/null 2>&1; then
+  # 使用wget从远程获取脚本
+  download_command="wget -qO"
 else
-    use_arch=$get_arch;
+  echo "无法获取脚本，系统未安装curl或wget。"
+  exit 1
 fi
-export ARCH=$use_arch;
-echo "The system architecture is \"${get_arch}\". Use \"${ARCH}\"";
+
+echo "请输入选项："
+echo "1. 执行arch.sh脚本"
+echo "2. 执行install.sh脚本"
+echo "3. 执行update.sh脚本"
+echo "4. 执行uninstall.sh脚本"
+read choice
+
+case $choice in
+  1)
+    # 从远程下载arch.sh脚本并执行
+    $download_command arch.sh "${download_url}arch.sh"
+    chmod +x arch.sh
+    ./arch.sh
+    ;;
+  2)
+    # 从远程下载install.sh脚本并执行
+    $download_command install.sh "${download_url}install.sh"
+    chmod +x update.sh
+    ./install.sh
+    ;;
+  3)
+      # 从远程下载install.sh脚本并执行
+      $download_command install.sh "${download_url}install.sh"
+      chmod +x uninstall.sh
+      ./install.sh
+      ;;
+  4)
+      # 从远程下载install.sh脚本并执行
+      $download_command install.sh "${download_url}install.sh"
+      chmod +x install.sh
+      ./install.sh
+      ;;
+  *)
+    echo "无效的选项"
+    exit 1
+    ;;
+esac

@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -13,8 +15,26 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	requestSource := getRequestSource(r)
 
 	if requestSource == "curl" || requestSource == "wget" {
-		// 如果是通过curl或wget访问，则输出shell文件
-		scriptContent, err := ioutil.ReadFile("scripts/index.sh")
+		// 获取请求的脚本文件名
+		scriptName := filepath.Base(r.URL.Path)
+		// 构建脚本文件的完整路径
+		scriptPath := filepath.Join("scripts", scriptName)
+
+		// 检查是否为根路径
+		if r.URL.Path == "/" {
+			scriptPath = filepath.Join("scripts", "index.sh")
+		}
+
+		// 检查脚本文件是否存在
+		_, err := os.Stat(scriptPath)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "File Not Found")
+			return
+		}
+
+		// 读取脚本文件内容
+		scriptContent, err := ioutil.ReadFile(scriptPath)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "Internal Server Error")
@@ -22,7 +42,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Content-Type", "application/octet-stream")
-		w.Header().Set("Content-Disposition", "attachment; filename=shell.sh")
+		w.Header().Set("Content-Disposition", "attachment; filename="+scriptName)
 		fmt.Fprint(w, string(scriptContent))
 		return
 	}
