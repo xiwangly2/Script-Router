@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -34,7 +33,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// 读取脚本文件内容
-		scriptContent, err := ioutil.ReadFile(scriptPath)
+		scriptContent, err := os.ReadFile(scriptPath)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "Internal Server Error")
