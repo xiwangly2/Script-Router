@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 这里可能需要重新指定URL
-download_url="http://vs8.top/"
+download_url="http://vs8.top/scripts/"
 # 推荐使用`bash <(curl -sSL vs8.top)`命令直接执行
 
 # 检查系统是否安装了curl或wget
