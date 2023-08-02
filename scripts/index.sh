@@ -64,9 +64,9 @@ function execute_shortcut_menu() {
       echo "请输入代理URL:"
       read proxy_url
       # Write the proxy settings to /etc/profile
-      echo "export http_proxy=\"$proxy_url\"" | sudo tee -a /etc/profile
-      echo "export https_proxy=\"$proxy_url\"" | sudo tee -a /etc/profile
-      echo "export no_proxy=\"localhost,127.*,10.*,172.16.*,172.17.*,172.18.*,172.19.*,172.20.*,172.21.*,172.22.*,172.23.*,172.24.*,172.25.*,172.26.*,172.27.*,172.28.*,172.29.*,172.30.*,172.31.*,192.168.*\"" | sudo tee -a /etc/profile
+      echo "export http_proxy=\"$proxy_url\"" | tee -a /etc/profile
+      echo "export https_proxy=\"$proxy_url\"" | tee -a /etc/profile
+      echo "export no_proxy=\"localhost,127.*,10.*,172.16.*,172.17.*,172.18.*,172.19.*,172.20.*,172.21.*,172.22.*,172.23.*,172.24.*,172.25.*,172.26.*,172.27.*,172.28.*,172.29.*,172.30.*,172.31.*,192.168.*\"" | tee -a /etc/profile
       source /etc/profile
       echo "已设置代理：$proxy_url"
       ;;
