@@ -39,6 +39,8 @@ function show_shortcut_menu() {
   echo "1. 一键关闭SELinux(redhat系Linux需要)"
   echo "2. 一键允许root用户连接ssh"
   echo "3. 一键设置vi-tiny可以使用插入(Debian最小化安装可能出现的问题)"
+  echo "4. 一键设置Linux系统代理"
+  echo "5. 清除系统代理"
 }
 
 function execute_shortcut_menu() {
