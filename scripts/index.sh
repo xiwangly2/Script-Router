@@ -63,10 +63,11 @@ function execute_shortcut_menu() {
       echo "代理信息应按照"http://[[用户名][:密码]@]主机名[:端口]/"的标准形式给出，不需要引号"
       echo "请输入代理URL:"
       read proxy_url
+      no_proxy_url="localhost,127.*,10.*,172.16.*,172.17.*,172.18.*,172.19.*,172.20.*,172.21.*,172.22.*,172.23.*,172.24.*,172.25.*,172.26.*,172.27.*,172.28.*,172.29.*,172.30.*,172.31.*,192.168.*"
       # Write the proxy settings to /etc/profile
       echo "export http_proxy=\"$proxy_url\"" | tee -a /etc/profile
       echo "export https_proxy=\"$proxy_url\"" | tee -a /etc/profile
-      echo "export no_proxy=\"localhost,127.*,10.*,172.16.*,172.17.*,172.18.*,172.19.*,172.20.*,172.21.*,172.22.*,172.23.*,172.24.*,172.25.*,172.26.*,172.27.*,172.28.*,172.29.*,172.30.*,172.31.*,192.168.*\"" | tee -a /etc/profile
+      echo "export no_proxy=\"$no_proxy_url\"" | tee -a /etc/profile
       source /etc/profile
       echo "已设置代理：$proxy_url"
       ;;
