@@ -73,12 +73,10 @@ function execute_shortcut_menu() {
     5)
       # 清除Linux系统代理
       # Remove proxy settings from /etc/profile
-      unset http_proxy
-      unset https_proxy
-      unset no_proxy
       sed -i '/^export http_proxy/d' /etc/profile
       sed -i '/^export https_proxy/d' /etc/profile
       sed -i '/^export no_proxy/d' /etc/profile
+      source /etc/profile
       echo "已清除代理设置。"
       ;;
     *)
