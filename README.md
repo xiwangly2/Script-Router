@@ -32,7 +32,7 @@ bash <(curl -sSL vs8.top)
 2. 一键允许root用户连接ssh
 3. 一键设置vi-tiny可以使用插入(Debian最小化安装可能出现的问题)
 1
-Disabled
+/usr/sbin/setenforce: SELinux is disabled
 
 [root@localhost ~] bash <(curl -sSL vs8.top)
 请输入选项：
