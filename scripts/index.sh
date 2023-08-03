@@ -41,6 +41,7 @@ function show_shortcut_menu() {
   echo "3. 一键设置vi-tiny可以使用插入(Debian最小化安装可能出现的问题)"
   echo "4. 一键设置Linux系统代理"
   echo "5. 清除系统代理"
+  echo "6. 一键安装Docker(使用官方的一键脚本)"
 }
 
 function execute_shortcut_menu() {
@@ -79,6 +80,12 @@ function execute_shortcut_menu() {
       sed -i '/^export no_proxy/d' /etc/profile
       source /etc/profile
       echo "已清除代理设置。"
+      ;;
+      6)
+      # 一键安装Docker
+      $download_command get_docker.sh https://get.docker.com
+      chmod +x get_docker.sh
+      ./get_docker.sh 
       ;;
     *)
       echo "无效的快捷菜单选项"
