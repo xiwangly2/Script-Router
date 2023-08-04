@@ -42,6 +42,7 @@ function show_shortcut_menu() {
   echo "4. One-click set up the Linux system proxy"
   echo "5. Clear the system proxy"
   echo "6. One-click install Docker (using the official one-click script)"
+  echo "7. One-click configure Docker buildx (using the tonistiigi/binfmt image)"
 }
 
 function execute_shortcut_menu() {
@@ -86,6 +87,12 @@ function execute_shortcut_menu() {
       $download_command get_docker.sh https://get.docker.com
       chmod +x get_docker.sh
       ./get_docker.sh 
+      ;;
+      7)
+      # One-click configure Docker buildx
+      docker run --rm --privileged tonistiigi/binfmt:latest --install all
+      docker buildx create --name mybuilder --driver docker-container
+      docker buildx use mybuilder
       ;;
     *)
       echo "Invalid shortcut menu option"
