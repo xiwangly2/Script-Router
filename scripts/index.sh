@@ -1,68 +1,68 @@
 #!/bin/bash
 
-# 这里可能需要重新指定URL
+# Here you may need to specify the URL again
 download_url="http://vs8.top/scripts/"
-# 推荐使用`bash <(curl -sSL vs8.top)`命令直接执行
+# It is recommended to use the command 'bash <(curl -sSL vs8.top)' to execute directly.
 
-# 检查系统是否安装了curl或wget
+# Check if curl or wget is installed on the system
 if command -v curl >/dev/null 2>&1; then
-  # 使用curl从远程获取脚本
+  # Use curl to fetch the script from the remote
   download_command="curl -sSo"
 elif command -v wget >/dev/null 2>&1; then
-  # 使用wget从远程获取脚本
+  # Use wget to fetch the script from the remote
   download_command="wget -qO"
 else
-  echo "无法获取脚本，系统未安装curl或wget。"
+  echo "Unable to fetch the script. curl or wget is not installed on the system."
   exit 1
 fi
 
 function execute_script() {
   local script_name=$1
-  # 从远程下载脚本并执行
+  # Download the script from the remote and execute it
   $download_command "$script_name" "${download_url}$script_name"
   chmod +x "$script_name"
   ./"$script_name"
 }
 
 function show_main_menu() {
-  echo "请输入选项："
-  echo "-1. 执行快捷菜单(一些实用功能)"
-  echo "1. 执行arch.sh脚本(查看架构)"
-  echo "2. 执行install.sh脚本(没写)"
-  echo "3. 执行update.sh脚本(没写)"
-  echo "4. 执行uninstall.sh脚本(没写)"
-  echo "5. 一键换清华源setup_sources.sh(支持多种发行版)"
+  echo "Please enter your choice:"
+  echo "-1. Execute the shortcut menu (some useful functions)"
+  echo "1. Execute arch.sh script (view architecture)"
+  echo "2. Execute install.sh script (not written)"
+  echo "3. Execute update.sh script (not written)"
+  echo "4. Execute uninstall.sh script (not written)"
+  echo "5. One-click switch to Tsinghua sources setup_sources.sh (supports multiple distributions)"
 }
 
 function show_shortcut_menu() {
-  echo "请输入选项："
-  echo "1. 一键关闭SELinux(redhat系Linux需要)"
-  echo "2. 一键允许root用户连接ssh"
-  echo "3. 一键设置vi-tiny可以使用插入(Debian最小化安装可能出现的问题)"
-  echo "4. 一键设置Linux系统代理"
-  echo "5. 清除系统代理"
-  echo "6. 一键安装Docker(使用官方的一键脚本)"
+  echo "Please enter your choice:"
+  echo "1. One-click disable SELinux (required for Red Hat-based Linux)"
+  echo "2. One-click allow root user to connect via SSH"
+  echo "3. One-click set vi-tiny to enable insert mode (Debian minimal installation may encounter issues)"
+  echo "4. One-click set up the Linux system proxy"
+  echo "5. Clear the system proxy"
+  echo "6. One-click install Docker (using the official one-click script)"
 }
 
 function execute_shortcut_menu() {
   local shortcut_choice=$1
   case $shortcut_choice in
     1)
-      # 即时生效并永久关闭SELinux的命令
+      # Command to immediately disable and permanently disable SELinux
       sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/sysconfig/selinux && /usr/sbin/setenforce 0
       ;;
     2)
-      # 一键允许root用户连接ssh
+      # One-click allow root user to connect via SSH
       sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config && /etc/init.d/ssh reload
       ;;
     3)
-      # 设置vi-tiny可以使用插入
+      # Set vi-tiny to enable insert mode
       sed -i 's/set compatible/set nocompatible/g' /etc/vim/vimrc.tiny
       ;;
     4)
-      # 一键设置Linux系统代理
-      echo "代理信息应按照"http://[[用户名][:密码]@]主机名[:端口]/"的标准形式给出，不需要引号"
-      echo "请输入代理URL:"
+      # One-click set up the Linux system proxy
+      echo "Proxy information should be provided in the standard form of 'http://[[username][:password]@]hostname[:port]/', without the quotes."
+      echo "Please enter the proxy URL:"
       read proxy_url
       no_proxy_url="localhost,127.*,10.*,172.16.*,172.17.*,172.18.*,172.19.*,172.20.*,172.21.*,172.22.*,172.23.*,172.24.*,172.25.*,172.26.*,172.27.*,172.28.*,172.29.*,172.30.*,172.31.*,192.168.*"
       # Write the proxy settings to /etc/profile
@@ -70,25 +70,25 @@ function execute_shortcut_menu() {
       echo "export https_proxy=\"$proxy_url\"" | tee -a /etc/profile
       echo "export no_proxy=\"$no_proxy_url\"" | tee -a /etc/profile
       source /etc/profile
-      echo "已设置代理：$proxy_url"
+      echo "Proxy set: $proxy_url"
       ;;
     5)
-      # 清除Linux系统代理
+      # Clear the Linux system proxy
       # Remove proxy settings from /etc/profile
       sed -i '/^export http_proxy/d' /etc/profile
       sed -i '/^export https_proxy/d' /etc/profile
       sed -i '/^export no_proxy/d' /etc/profile
       source /etc/profile
-      echo "已清除代理设置。"
+      echo "Proxy settings cleared."
       ;;
       6)
-      # 一键安装Docker
+      # One-click install Docker
       $download_command get_docker.sh https://get.docker.com
       chmod +x get_docker.sh
       ./get_docker.sh 
       ;;
     *)
-      echo "无效的快捷菜单选项"
+      echo "Invalid shortcut menu option"
       exit 1
       ;;
   esac
@@ -119,7 +119,7 @@ case $choice in
     execute_script "setup_sources.sh"
     ;;
   *)
-    echo "无效的选项"
+    echo "Invalid option"
     exit 1
     ;;
 esac
