@@ -43,6 +43,7 @@ function show_shortcut_menu() {
   echo "5. Clear the system proxy"
   echo "6. One-click install Docker (using the official one-click script)"
   echo "7. One-click configure Docker buildx (using the tonistiigi/binfmt image)"
+  echo "8. One-click build and install yay (An AUR Helper Written in Go, ArchLinux)"
 }
 
 function execute_shortcut_menu() {
@@ -93,6 +94,10 @@ function execute_shortcut_menu() {
       docker run --rm --privileged tonistiigi/binfmt:latest --install all
       docker buildx create --name mybuilder --driver docker-container
       docker buildx use mybuilder
+      ;;
+      8)
+      # One-click build and install yay
+      pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
       ;;
     *)
       echo "Invalid shortcut menu option"
