@@ -51,6 +51,7 @@ function execute_shortcut_menu() {
   case $shortcut_choice in
     1)
       # Command to immediately disable and permanently disable SELinux
+      sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/selinux/config
       sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/sysconfig/selinux && /usr/sbin/setenforce 0
       ;;
     2)
