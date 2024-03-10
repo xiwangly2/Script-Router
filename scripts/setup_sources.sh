@@ -12,6 +12,7 @@ show_supported_distros() {
     echo "7. Arch Linux"
     echo "8. openSUSE Tumbleweed"
     echo "9. openSUSE Leap 15.3"
+    echo "10. OpenWRT (LEDE)"
 
     # 添加其他发行版选项...
 }
@@ -87,6 +88,11 @@ setup_sources() {
             zypper ar -cfg 'https://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/non-oss/' mirror-update-non-oss
             zypper ar -cfg 'https://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/sle/' mirror-sle-update
             zypper ar -cfg 'https://mirrors.tuna.tsinghua.edu.cn/opensuse/update/leap/$releasever/backports/' mirror-backports-update
+            ;;
+        "10")
+            echo "Setting up sources for OpenWRT (LEDE)..."
+            cp /etc/opkg/distfeeds.conf /etc/opkg/distfeeds.conf.bak
+            sed -i 's_downloads.openwrt.org_mirrors.tuna.tsinghua.edu.cn/openwrt_' /etc/opkg/distfeeds.conf
             ;;
         *)
             echo "Unsupported distribution. Exiting..."
