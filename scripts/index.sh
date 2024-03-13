@@ -37,6 +37,7 @@ function show_main_menu() {
 function show_shortcut_menu() {
   echo "Please enter your choice:"
   echo "1. One-click disable SELinux (required for Red Hat-based Linux)"
+  echo "1-1 One-click disable firewalld (required for Red Hat-based Linux)"
   echo "2. One-click allow root user to connect via SSH"
   echo "3. One-click set vi-tiny to enable insert mode (Debian minimal installation may encounter issues)"
   echo "4. One-click set up the Linux system proxy"
@@ -53,6 +54,10 @@ function execute_shortcut_menu() {
       # Command to immediately disable and permanently disable SELinux
       sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/selinux/config
       sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/sysconfig/selinux && /usr/sbin/setenforce 0
+      ;;
+    1-1)
+      # Command to immediately disable firewalld and permanently disable firewalld
+      systemctl disable firewalld.service && systemctl stop firewalld.service
       ;;
     2)
       # One-click allow root user to connect via SSH
