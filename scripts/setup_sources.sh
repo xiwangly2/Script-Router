@@ -19,7 +19,7 @@ show_supported_distros() {
 
 # 获取用户选择的发行版
 get_distro_choice() {
-    read -p "Enter your Linux distribution choice: " choice
+    read -rp "Enter your Linux distribution choice: " choice
     echo "$choice"
 }
 
@@ -104,7 +104,8 @@ setup_sources() {
 # 主函数
 main() {
     show_supported_distros
-    local distro_choice=$(get_distro_choice)
+    local distro_choice
+    distro_choice=$(get_distro_choice)
 
     setup_sources "$distro_choice"
 

@@ -71,7 +71,7 @@ function execute_shortcut_menu() {
       # One-click set up the Linux system proxy
       echo "Proxy information should be provided in the standard form of 'http://[[username][:password]@]hostname[:port]/', without the quotes."
       echo "Please enter the proxy URL:"
-      read proxy_url
+      read -r proxy_url
       no_proxy_url="localhost,127.*,10.*,172.16.*,172.17.*,172.18.*,172.19.*,172.20.*,172.21.*,172.22.*,172.23.*,172.24.*,172.25.*,172.26.*,172.27.*,172.28.*,172.29.*,172.30.*,172.31.*,192.168.*"
       # Write the proxy settings to /etc/profile
       echo "export http_proxy=\"$proxy_url\"" | tee -a /etc/profile
@@ -113,12 +113,12 @@ function execute_shortcut_menu() {
 }
 
 show_main_menu
-read choice
+read -r choice
 
 case $choice in
   -1)
     show_shortcut_menu
-    read shortcut_choice
+    read -r shortcut_choice
     execute_shortcut_menu "$shortcut_choice"
     ;;
   1)

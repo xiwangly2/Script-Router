@@ -12,7 +12,11 @@
 ## 开始
 
 ```bash
-bash <(curl -sSL vs8.top)
+bash <(curl vs8.top)
+```
+或者使用 wget ：
+```bash
+bash <(wget -qO- vs8.top)
 ```
 
 ## 输出示例
@@ -73,6 +77,10 @@ Source setup completed.
 
 
 ```
+
+## 部署
+
+
 
 参考
 - https://github.com/SuperManito/LinuxMirrors

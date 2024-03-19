@@ -1,11 +1,12 @@
 #!/bin/bash
 
+if arch=$(arch); then
+    :
+else
+    arch=$(uname -m)
+fi
+
 get_arch() {
-    local arch
-    arch=$(arch)
-    if [[ $? != 0 ]]; then
-        arch=$(uname -m)
-    fi
 
     if [[ $arch =~ "x86_64" ]]; then
         use_arch="amd64"
@@ -31,10 +32,10 @@ get_arch() {
         use_arch=$arch
     fi
 
-    echo "$arch"
+    echo "$use_arch"
 }
 
 # 调用函数获取架构
 ARCH=$(get_arch)
 use_arch=$ARCH
-echo "The system architecture is \"$ARCH\". Use \"$use_arch\""
+echo "The system architecture is \"$(arch)\". Use \"$use_arch\""
