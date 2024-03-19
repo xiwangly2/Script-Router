@@ -8,6 +8,7 @@
       <env name="GOOS" value="linux" />
     </envs>
     <kind value="DIRECTORY" />
+    <package value="github.com/xiwangly2/Script-Router" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/main.go" />
     <output_directory value="$PROJECT_DIR$/out" />

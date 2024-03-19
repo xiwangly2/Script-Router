@@ -1,5 +1,4 @@
 <?php
-// ln -s Script-Router/scripts/* .
 // 处理请求
 function handleRequest() {
     $requestSource = getRequestSource();

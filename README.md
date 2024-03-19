@@ -11,6 +11,7 @@
 
 ## 开始
 
+简短的一句话命令，如果系统上没有 bash 的话，可以使用 sh 或者 zsh 等等 shell 代替，使用 sh 执行可能有部分命令用不了
 ```bash
 bash <(curl vs8.top)
 ```
@@ -19,8 +20,7 @@ bash <(curl vs8.top)
 bash <(wget -qO- vs8.top)
 ```
 
-## 输出示例
-
+## 功能
 ```bash
 [root@localhost ~] bash <(curl -sL vs8.top)
 请输入选项：
@@ -78,8 +78,24 @@ Source setup completed.
 
 ```
 
-## 部署
+## 搭建
 
+编译成二进制文件
+
+```bash
+go build -o script-router main.go
+```
+
+然后运行
+
+```bash
+./script-router
+
+# 可以指定地址和端口
+./script-router -addr 0.0.0.0:8080
+```
+
+可以根据需要配置反向代理
 
 
 参考

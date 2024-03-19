@@ -3,7 +3,9 @@
     <module name="Script-Router" />
     <working_directory value="$PROJECT_DIR$" />
     <go_parameters value="-o out\Script-Router.exe" />
+    <parameters value="-addr 0.0.0.0:28888" />
     <kind value="DIRECTORY" />
+    <package value="github.com/xiwangly2/Script-Router" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/main.go" />
     <output_directory value="$PROJECT_DIR$/out" />

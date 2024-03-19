@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -110,11 +111,12 @@ func getRequestSource(r *http.Request) string {
 }
 
 func main() {
-	http.HandleFunc("/", handleRequest)
-
 	// 选择要监听的地址和端口
-	// 建议使用其他的端口避免冲突
-	addr := "0.0.0.0:8080"
+	// 示例 -addr 0.0.0.0:8080
+	var addr string
+	flag.StringVar(&addr, "addr", "0.0.0.0:28789", "server address")
+	flag.Parse()
+	http.HandleFunc("/", handleRequest)
 
 	fmt.Printf("Server is listening on %s\n", addr)
 
