@@ -23,25 +23,34 @@ if [ -n "$BASH_VERSION" ]; then
   # Bash specific code
   # It is recommended to use the command 'bash <(curl -sSL vs8.top)' to execute directly.
   shell_name="main.bash"
-  $download_command $shell_name "http://vs8.top/scripts/$shell_name"
-  chmod +x $shell_name
-  bash $shell_name
 elif [ -n "$ZSH_VERSION" ]; then
   # Zsh specific code
   # It is recommended to use the command 'zsh <(curl -sSL vs8.top)' to execute directly.
   shell_name="main.zsh"
-  chmod +x $shell_name
-  $download_command $shell_name "http://vs8.top/scripts/$shell_name"
-  zsh $shell_name
 elif [ -n "$FISH_VERSION" ]; then
   # Fish specific code
   # It is recommended to use the command 'fish <(curl -sSL vs8.top)' to execute directly.
   # TODO: Add fish script
   shell_name="main.fish"
-  $download_command $shell_name "http://vs8.top/scripts/$shell_name"
-  chmod +x $shell_name
-  fish $shell_name
 else
   echo "Unsupported shell. Please use bash or zsh."
   exit 1
 fi
+
+# Download the script
+tmp_script=$(mktemp)
+if ! $download_command "$tmp_script" "http://vs8.top/scripts/$shell_name"; then
+  echo "Failed to download the script."
+  rm "$tmp_script"
+  exit 1
+fi
+
+tr -d '\r' < "$tmp_script" > "$tmp_script.tmp" && mv "$tmp_script.tmp" "$tmp_script"
+# Make the script executable
+chmod +x "$tmp_script"
+
+# Execute the script with the appropriate shell
+"$SHELL" "$tmp_script"
+
+# Clean up the temporary script file
+rm "$tmp_script"

@@ -25,9 +25,12 @@ fi
 function execute_script() {
   local script_name=$1
   # Download the script from the remote and execute it
-  $download_command "$script_name" "${download_url}$script_name"
-  chmod +x "$script_name"
-  ./"$script_name"
+  tmp_script=$(mktemp)
+  $download_command "$tmp_script" "${download_url}$script_name"
+  tr -d '\r' < "$tmp_script" > "$tmp_script.tmp" && mv "$tmp_script.tmp" "$tmp_script"
+  chmod +x "$tmp_script"
+  "$tmp_script"
+  rm "$tmp_script" # Remove the temporary script file
 }
 
 function show_main_menu() {
