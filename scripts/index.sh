@@ -18,24 +18,19 @@ else
   exit 1
 fi
 
-# Check if the shell is bash or zsh or others
-if [ -n "$BASH_VERSION" ]; then
-  # Bash specific code
-  # It is recommended to use the command 'bash <(curl -sSL vs8.top)' to execute directly.
-  shell_name="main.bash"
-elif [ -n "$ZSH_VERSION" ]; then
-  # Zsh specific code
-  # It is recommended to use the command 'zsh <(curl -sSL vs8.top)' to execute directly.
-  shell_name="main.zsh"
-elif [ -n "$FISH_VERSION" ]; then
-  # Fish specific code
-  # It is recommended to use the command 'fish <(curl -sSL vs8.top)' to execute directly.
-  # TODO: Add fish script
-  shell_name="main.fish"
-else
-  echo "Unsupported shell. Please use bash or zsh."
-  exit 1
-fi
+# Determine the shell type
+case "$SHELL" in
+  */bash)
+    shell_name="main.bash"
+    ;;
+  */zsh)
+    shell_name="main.zsh"
+    ;;
+  *)
+    echo "Unsupported shell. Please use bash or zsh."
+    exit 1
+    ;;
+esac
 
 # Download the script
 tmp_script=$(mktemp)
@@ -45,6 +40,7 @@ if ! $download_command "$tmp_script" "http://vs8.top/scripts/$shell_name"; then
   exit 1
 fi
 
+# Remove carriage return characters if any
 tr -d '\r' < "$tmp_script" > "$tmp_script.tmp" && mv "$tmp_script.tmp" "$tmp_script"
 # Make the script executable
 chmod +x "$tmp_script"
