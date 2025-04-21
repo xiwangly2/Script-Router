@@ -107,12 +107,22 @@ function execute_shortcut_menu() {
       ;;
     7)
       # One-click configure Docker buildx
+      # Check if Docker is installed
+      if ! command -v docker &> /dev/null; then
+        echo "Docker is not installed. Please install Docker first."
+        exit 1
+      fi
       docker run --rm --privileged tonistiigi/binfmt:latest --install all
       docker buildx create --name mybuilder --driver docker-container
       docker buildx use mybuilder
       ;;
     8)
       # One-click build and install yay
+      # Check if yay is already installed
+      if command -v yay &> /dev/null; then
+        echo "yay is already installed."
+        exit 0
+      fi
       pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
       ;;
     *)
