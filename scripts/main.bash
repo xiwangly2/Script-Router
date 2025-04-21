@@ -35,25 +35,26 @@ function execute_script() {
 
 function show_main_menu() {
   echo "Please enter your choice:"
-  echo "-1. Execute the shortcut menu (some useful functions)"
-  echo "1. Execute arch.sh script (view architecture)"
-  echo "2. Execute install.sh script (not written)"
-  echo "3. Execute update.sh script (not written)"
-  echo "4. Execute uninstall.sh script (not written)"
-  echo "5. One-click switch to Tsinghua sources setup_sources.sh (supports multiple distributions)"
+  echo "[0] Execute the shortcut menu (some useful functions)"
+  echo "[1] Execute arch.sh script (view architecture)"
+  echo "[2] Execute install.sh script (not written)"
+  echo "[3] Execute update.sh script (not written)"
+  echo "[4] Execute uninstall.sh script (not written)"
+  echo "[5] One-click switch to Tsinghua sources setup_sources.sh (supports multiple distributions)"
+  echo "[1panel] One-click install 1Panel (based on your OS)"
 }
 
 function show_shortcut_menu() {
   echo "Please enter your choice:"
-  echo "1. One-click disable SELinux (required for Red Hat-based Linux)"
-  echo "1-1 One-click disable firewalld (required for Red Hat-based Linux)"
-  echo "2. One-click allow root user to connect via SSH"
-  echo "3. One-click set vi-tiny to enable insert mode (Debian minimal installation may encounter issues)"
-  echo "4. One-click set up the Linux system proxy"
-  echo "5. Clear the system proxy"
-  echo "6. One-click install Docker (using the official one-click script)"
-  echo "7. One-click configure Docker buildx (using the tonistiigi/binfmt image)"
-  echo "8. One-click build and install yay (An AUR Helper Written in Go, ArchLinux)"
+  echo "[1] One-click disable SELinux (required for Red Hat-based Linux)"
+  echo "[1.1] One-click disable firewalld (required for Red Hat-based Linux)"
+  echo "[2] One-click allow root user to connect via SSH"
+  echo "[3] One-click set vi-tiny to enable insert mode (Debian minimal installation may encounter issues)"
+  echo "[4] One-click set up the Linux system proxy"
+  echo "[5] Clear the system proxy"
+  echo "[6] One-click install Docker (using the official one-click script)"
+  echo "[7] One-click configure Docker buildx (using the tonistiigi/binfmt image)"
+  echo "[8] One-click build and install yay (An AUR Helper Written in Go, ArchLinux)"
 }
 
 function execute_shortcut_menu() {
@@ -64,7 +65,7 @@ function execute_shortcut_menu() {
       sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/selinux/config
       sed -i 's/^SELINUX=.*/#&/;s/^SELINUXTYPE=.*/#&/;/SELINUX=.*/a SELINUX=disabled' /etc/sysconfig/selinux && /usr/sbin/setenforce 0
       ;;
-    1-1)
+    1.1)
       # Command to immediately disable firewalld and permanently disable firewalld
       systemctl disable firewalld.service && systemctl stop firewalld.service
       ;;
@@ -98,19 +99,19 @@ function execute_shortcut_menu() {
       source /etc/profile
       echo "Proxy settings cleared."
       ;;
-      6)
+    6)
       # One-click install Docker
       $download_command get_docker.sh https://get.docker.com
       chmod +x get_docker.sh
       ./get_docker.sh
       ;;
-      7)
+    7)
       # One-click configure Docker buildx
       docker run --rm --privileged tonistiigi/binfmt:latest --install all
       docker buildx create --name mybuilder --driver docker-container
       docker buildx use mybuilder
       ;;
-      8)
+    8)
       # One-click build and install yay
       pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
       ;;
@@ -121,11 +122,48 @@ function execute_shortcut_menu() {
   esac
 }
 
+function install_1panel_by_os() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    distro=$ID
+  else
+    echo "Unable to detect OS type. Please install 1Panel manually."
+    exit 1
+  fi
+
+  echo "Detected OS: $distro"
+
+  case "$distro" in
+    ubuntu)
+      echo "Installing 1Panel for Ubuntu..."
+      sudo curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && sudo bash quick_start.sh
+      ;;
+    debian)
+      echo "Installing 1Panel for Debian..."
+      curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && bash quick_start.sh
+      ;;
+    centos|rhel)
+      echo "Installing 1Panel for CentOS/RedHat..."
+      curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && sh quick_start.sh
+      ;;
+    openeuler|anolis|kylin|uos)
+      echo "Installing Docker and 1Panel for openEuler or similar systems..."
+      bash <(curl -sSL https://linuxmirrors.cn/docker.sh)
+      curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && sh quick_start.sh
+      ;;
+    *)
+      echo "Unknown OS type. Using generic method: install Docker and 1Panel..."
+      bash <(curl -sSL https://linuxmirrors.cn/docker.sh)
+      curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && sh quick_start.sh
+      ;;
+  esac
+}
+
 show_main_menu
 read -r choice
 
 case $choice in
-  -1)
+  0)
     show_shortcut_menu
     read -r shortcut_choice
     execute_shortcut_menu "$shortcut_choice"
@@ -145,6 +183,8 @@ case $choice in
   5)
     execute_script "setup_sources.sh"
     ;;
+  1panel)
+    install_1panel_by_os
   *)
     echo "Invalid option"
     exit 1

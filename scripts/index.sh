@@ -24,7 +24,7 @@ case "$SHELL" in
     shell_name="main.bash"
     ;;
   */zsh)
-    shell_name="main.zsh"
+    shell_name="main.bash"
     ;;
   *)
     echo "Unsupported shell. Please use bash or zsh."
