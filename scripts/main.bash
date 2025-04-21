@@ -185,6 +185,7 @@ case $choice in
     ;;
   1panel)
     install_1panel_by_os
+    ;;
   *)
     echo "Invalid option"
     exit 1
