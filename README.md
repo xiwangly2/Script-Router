@@ -78,6 +78,18 @@ Source setup completed.
 
 ```
 
+### 一键安装 frp
+
+frps
+```bash
+bash <(curl vs8.top/frps.sh)
+```
+
+frpc
+```bash
+bash <(curl vs8.top/frpc.sh)
+```
+
 ## 搭建
 
 编译成二进制文件
