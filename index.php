@@ -7,8 +7,8 @@ function handleRequest() {
         // 获取请求的脚本文件名
         $scriptName = basename($_SERVER['REQUEST_URI']);
         // 构建脚本文件的完整路径
-        // $scriptPath = 'scripts/' . $scriptName;
-        $scriptPath = $scriptName;
+        $scriptPath = 'scripts/' . $scriptName;
+//         $scriptPath = $scriptName;
 
         // 检查是否为根路径
         if ($_SERVER['REQUEST_URI'] === '/') {
@@ -39,8 +39,8 @@ function handleRequest() {
         // 获取请求的脚本文件名
         $scriptName = basename($_SERVER['REQUEST_URI']);
         // 构建脚本文件的完整路径
-        // $scriptPath = 'scripts/' . $scriptName;
-        $scriptPath = $scriptName;
+        $scriptPath = 'scripts/' . $scriptName;
+//         $scriptPath = $scriptName;
 
         // 检查是否为根路径
         if ($_SERVER['REQUEST_URI'] === '/') {
