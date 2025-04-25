@@ -2,8 +2,8 @@
 set -eux
 
 # 1. 依赖安装
-if   command -v yum      >/dev/null; then INSTALL="yum install -y"
-elif command -v dnf      >/dev/null; then INSTALL="dnf install -y"
+if   command -v dnf      >/dev/null; then INSTALL="dnf install --allowerasing -y"
+elif command -v yum      >/dev/null; then INSTALL="yum install -y"
 elif command -v apt-get  >/dev/null; then INSTALL="apt-get install -y"
 elif command -v apk      >/dev/null; then INSTALL="apk add --no-cache"
 elif command -v zypper   >/dev/null; then INSTALL="zypper install -y"
