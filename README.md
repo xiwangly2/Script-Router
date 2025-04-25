@@ -20,6 +20,18 @@ bash <(curl vs8.top)
 bash <(wget -qO- vs8.top)
 ```
 
+对于 sudo 提升的权限
+```bash
+sudo bash -c "$(curl -fsSL vs8.top)"
+```
+
+更通用的方法
+```bash
+curl -fsSL vs8.top -o main.sh
+chmod +x main.sh
+bash main.sh
+```
+
 ## 功能
 ```bash
 [root@localhost ~] bash <(curl -sL vs8.top)
