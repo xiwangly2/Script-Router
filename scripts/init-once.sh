@@ -28,6 +28,13 @@ for iface in $(ls /sys/class/net/ | grep -v lo); do
     echo "🧬 设置接口 $iface 的 MAC 为 $new_mac"
 done
 
+# 更新 apt（无交互模式），并清理系统
+DEBIAN_FRONTEND=noninteractive apt update && \
+DEBIAN_FRONTEND=noninteractive apt -y -o Dpkg::Options::="--force-confdef" \
+-o Dpkg::Options::="--force-confold" upgrade && \
+apt autoremove -y && \
+apt clean
+
 # 删除 systemd 服务，确保只执行一次
 systemctl disable init-once.service
 rm -f /etc/systemd/system/init-once.service
