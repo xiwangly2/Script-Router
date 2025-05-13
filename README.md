@@ -105,12 +105,20 @@ frpc
 bash <(curl vs8.top/frpc.sh)
 ```
 
-卸载
+卸载 frps
 ```bash
+systemctl stop frps
+systemctl disable frps
 rm -rf /usr/local/bin/frps
-# rm -rf /usr/local/bin/frpc
 rm -rf /etc/frp/frps.toml
-# rm -rf /etc/frp/frpc.toml
+```
+
+卸载 frpc
+```bash
+systemctl stop frpc
+systemctl disable frpc
+rm -rf /usr/local/bin/frpc
+rm -rf /etc/frp/frpc.toml
 ```
 
 ## 搭建
