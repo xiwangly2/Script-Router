@@ -94,12 +94,23 @@ Source setup completed.
 
 frps
 ```bash
+# token 配置
 bash <(curl vs8.top/frps.sh)
+# oidc 配置
+# bash <(curl vs8.top/frps-oidc.sh)
 ```
 
 frpc
 ```bash
 bash <(curl vs8.top/frpc.sh)
+```
+
+卸载
+```bash
+rm -rf /usr/local/bin/frps
+# rm -rf /usr/local/bin/frpc
+rm -rf /etc/frp/frps.toml
+# rm -rf /etc/frp/frpc.toml
 ```
 
 ## 搭建
