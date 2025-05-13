@@ -23,8 +23,7 @@ for pkg in curl tar; do
 done
 
 # 2. 获取最新版本号
-VERSION_TAG=$(curl -sSL https://api.github.com/repos/fatedier/frp/releases/latest \
-  | grep '"tag_name"' | head -1 | cut -d '"' -f4)
+VERSION_TAG=$(curl -sI https://github.com/fatedier/frp/releases/latest | grep -i location | sed -E 's/.*\/tag\/(v[0-9.]+).*/\1/')
 # 去掉开头的 v，得到纯版本号
 VERSION=${VERSION_TAG#v}
 
