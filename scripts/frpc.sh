@@ -80,23 +80,15 @@ if [ -d /run/systemd/system ]; then
   cat >/etc/systemd/system/frpc.service <<EOF
 [Unit]
 Description=frpc service
-Wants=network-online.target
-After=network-online.target
-Before=network.target shutdown.target
-PartOf=shutdown.target
-DefaultDependencies=no
+After=network.target
 
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/frpc -c /etc/frp/frpc.toml
 Restart=always
-RestartSec=5s
-KillMode=process
-TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
   systemctl daemon-reload
   systemctl enable frpc
