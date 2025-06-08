@@ -154,7 +154,7 @@ After=network.target
 Type=simple
 ExecStart=/usr/local/bin/Script-Router -addr 0.0.0.0:28789
 Restart=always
-WorkingDirectory=/root
+WorkingDirectory=/root/Script-Router
 
 [Install]
 WantedBy=multi-user.target
