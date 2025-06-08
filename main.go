@@ -1,127 +1,141 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
+	"time"
 )
 
 var (
-	fileCache     = make(map[string][]byte)
-	fileCacheLock sync.RWMutex
+	fileCache = sync.Map{}
 )
 
 // 获取文件内容，如果缓存中不存在，则从磁盘读取
 func getFileContent(filePath string) ([]byte, error) {
-	fileCacheLock.RLock()
-	content, found := fileCache[filePath]
-	fileCacheLock.RUnlock()
-
-	if !found {
-		// 从磁盘读取文件内容
-		fileContent, err := os.ReadFile(filePath)
-		if err != nil {
-			return nil, err
-		}
-
-		// 更新缓存
-		fileCacheLock.Lock()
-		fileCache[filePath] = fileContent
-		fileCacheLock.Unlock()
-
-		return fileContent, nil
+	if content, ok := fileCache.Load(filePath); ok {
+		return content.([]byte), nil
 	}
 
-	return content, nil
+	fileContent, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	fileCache.Store(filePath, fileContent)
+	return fileContent, nil
 }
 
 // 处理请求
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	requestSource := getRequestSource(r)
 
-	// 获取请求的脚本文件名
-	scriptName := filepath.Base(r.URL.Path)
-	// 构建脚本文件的完整路径
+	cleanPath := path.Clean(r.URL.Path)
+	if strings.Contains(cleanPath, "..") {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "Invalid path")
+		return
+	}
+
+	scriptName := filepath.Base(cleanPath)
 	scriptPath := filepath.Join("scripts", scriptName)
 
-	if requestSource == "curl" || requestSource == "wget" {
-		// 检查是否为根路径
-		if r.URL.Path == "/" {
+	switch requestSource {
+	case "curl", "wget":
+		if cleanPath == "/" {
 			scriptPath = filepath.Join("scripts", "index.sh")
 		}
-
-		// 获取文件内容
 		scriptContent, err := getFileContent(scriptPath)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
-			_, _ = fmt.Fprint(w, "File Not Found")
+			fmt.Fprint(w, "File Not Found")
 			return
 		}
-
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.Header().Set("Content-Disposition", "attachment; filename="+scriptName)
-		_, _ = fmt.Fprint(w, string(scriptContent))
-		return
-	} else if requestSource == "powershell" {
-		// 检查是否为根路径
-		if r.URL.Path == "/" {
+		w.Write(scriptContent)
+	case "powershell":
+		if cleanPath == "/" {
 			scriptPath = filepath.Join("scripts", "index.ps1")
 		}
-		indexContent, err := getFileContent(scriptPath)
+		content, err := getFileContent(scriptPath)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = fmt.Fprint(w, "Internal Server Error")
+			fmt.Fprint(w, "Internal Server Error")
 			return
 		}
-
 		w.Header().Set("Content-Type", "text/plain")
-		_, _ = fmt.Fprint(w, string(indexContent))
-		return
-	} else {
-		// 如果是正常浏览器访问，则显示index.html的内容
-		indexContent, err := getFileContent("index.html")
+		w.Write(content)
+	default:
+		content, err := getFileContent("index.html")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = fmt.Fprint(w, "Internal Server Error")
+			fmt.Fprint(w, "Internal Server Error")
 			return
 		}
-
 		w.Header().Set("Content-Type", "text/html")
-		_, _ = fmt.Fprint(w, string(indexContent))
+		w.Write(content)
 	}
 }
 
-// 获取请求来源
 func getRequestSource(r *http.Request) string {
-	userAgent := r.Header.Get("User-Agent")
-	if strings.Contains(userAgent, "curl") {
+	agent := r.Header.Get("User-Agent")
+	switch {
+	case strings.Contains(agent, "curl"):
 		return "curl"
-	} else if strings.Contains(userAgent, "Wget") {
+	case strings.Contains(agent, "Wget"):
 		return "wget"
-	} else if strings.Contains(userAgent, "WindowsPowerShell") {
+	case strings.Contains(agent, "WindowsPowerShell"):
 		return "powershell"
+	default:
+		return "browser"
 	}
-	//fmt.Printf("User-Agent: %s\n", userAgent)
-	return "browser"
 }
 
 func main() {
-	// 选择要监听的地址和端口
-	// 示例 -addr 0.0.0.0:8080
 	var addr string
 	flag.StringVar(&addr, "addr", "0.0.0.0:28789", "server address")
 	flag.Parse()
-	http.HandleFunc("/", handleRequest)
 
-	fmt.Printf("Server is listening on %s\n", addr)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handleRequest)
 
-	err := http.ListenAndServe(addr, nil)
-	if err != nil {
-		log.Fatal(err)
+	srv := &http.Server{
+		Addr:         addr,
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	go func() {
+		log.Printf("Server is listening on %s\n", addr)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("ListenAndServe error: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("Shutting down server...")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v", err)
+	}
+	log.Println("Server exiting")
 }
