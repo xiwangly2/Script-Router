@@ -140,6 +140,38 @@ go build -o script-router main.go
 
 可以根据需要配置反向代理
 
+# 部署
+
+使用 systemd 管理脚本路由器
+
+```bash
+cat >/etc/systemd/system/Script-Router.service <<EOF
+[Unit]
+Description=Script-Router service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/Script-Router -addr 0.0.0.0:28789
+Restart=always
+WorkingDirectory=/root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable Script-Router
+systemctl start Script-Router
+# 查看状态
+systemctl status Script-Router
+# upload shell script to Workdirectory
+curl http://localhost:28789
+# 卸载
+#systemctl stop Script-Router
+#systemctl disable Script-Router
+#rm -f /etc/systemd/system/Script-Router.service
+```
 
 参考
 - https://github.com/SuperManito/LinuxMirrors
