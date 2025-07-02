@@ -60,6 +60,8 @@ if [ ! -f /etc/frp/frps.toml ]; then
   cat >/etc/frp/frps.toml <<EOF
 bindAddr = "0.0.0.0"
 bindPort = 7000
+kcpBindPort = 7000
+quicBindPort = 7001
 
 auth.method = "token"
 auth.token = "xxx"
