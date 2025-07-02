@@ -12,6 +12,13 @@ else
   echo "Unsupported package manager"; exit 1
 fi
 
+# 检查 frpc 是否已安装
+if [ -f /usr/local/bin/frpc ]; then
+  echo "frpc 已安装，执行更新..."
+else
+  echo "frpc 未安装，执行安装..."
+fi
+
 # 2. 按需检测并安装依赖
 for pkg in curl tar; do
   if ! command -v "$pkg" >/dev/null 2>&1; then
@@ -45,10 +52,12 @@ curl -sSL -o frp.tar.gz \
 tar -xzf frp.tar.gz
 
 # 5. 部署二进制与配置
-mv "frp_${VERSION}_linux_${ARCH}/frpc" /usr/local/bin/frpc
+mv -f "frp_${VERSION}_linux_${ARCH}/frpc" /usr/local/bin/frpc
 chmod +x /usr/local/bin/frpc
+# 仅首次安装时生成配置
 mkdir -p /etc/frp
-cat >/etc/frp/frpc.toml <<EOF
+if [ ! -f /etc/frp/frpc.toml ]; then
+  cat >/etc/frp/frpc.toml <<EOF
 serverAddr = "frps.example.com"
 serverPort = 7000
 
@@ -73,6 +82,9 @@ localIP = "127.0.0.1"
 localPort = 22
 remotePort = 10022
 EOF
+else
+  echo "/etc/frp/frpc.toml 已存在，跳过生成。"
+fi
 
 # 6. Init 系统检测
 if [ -d /run/systemd/system ]; then
