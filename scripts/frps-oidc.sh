@@ -22,6 +22,13 @@ for pkg in curl tar; do
   fi
 done
 
+# 检查 frps 是否已安装
+if [ -f /usr/local/bin/frps ]; then
+  echo "frps 已安装，执行更新..."
+else
+  echo "frps 未安装，执行安装..."
+fi
+
 # 2. 获取最新版本号
 VERSION_TAG=$(curl -sI https://github.com/fatedier/frp/releases/latest | grep -i location | sed -E 's/.*\/tag\/(v[0-9.]+).*/\1/')
 # 去掉开头的 v，得到纯版本号
@@ -47,8 +54,10 @@ tar -xzf frp.tar.gz
 # 5. 部署二进制与配置
 mv "frp_${VERSION}_linux_${ARCH}/frps" /usr/local/bin/frps
 chmod +x /usr/local/bin/frps
+# 仅首次安装时生成配置
 mkdir -p /etc/frp
-cat >/etc/frp/frps.toml <<EOF
+if [ ! -f /etc/frp/frps.toml ]; then
+  cat >/etc/frp/frps.toml <<EOF
 bindAddr = "0.0.0.0"
 bindPort = 7000
 kcpBindPort = 7000
@@ -69,6 +78,9 @@ auth.oidc.audience = ""
 #transport.tls.keyFile = "/etc/frp/ssl/server.key"
 #transport.tls.trustedCaFile = "/etc/frp/ssl/ca.crt"
 EOF
+else
+  echo "/etc/frp/frps.toml 已存在，跳过生成。"
+fi
 
 # 6. Init 系统检测
 if [ -d /run/systemd/system ]; then

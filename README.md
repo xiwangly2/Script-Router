@@ -100,6 +100,8 @@ bash <(curl vs8.top/frps.sh)
 # bash <(curl vs8.top/frps-oidc.sh)
 ```
 
+对于需要加速下载的情况可以替换链接为镜像地址，例如 `https://github.com/fatedier/frp/releases/download/` 替换为 `https://ghfast.top/https://github.com/fatedier/frp/releases/download/` 
+
 frpc
 ```bash
 bash <(curl vs8.top/frpc.sh)
