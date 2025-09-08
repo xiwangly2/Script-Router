@@ -49,12 +49,12 @@ if [[ -z "$mirror" ]]; then
   echo "请选择下载源:"
   echo "1. 官方 github"
   echo "2. ghfast 镜像"
-  echo "3. gitee"
+  echo "3. gitee(暂不可用)"
   read -p "输入序号(1/2/3): " mirror_sel
   case "$mirror_sel" in
     1) mirror="official" ;;
     2) mirror="ghfast" ;;
-    3) mirror="gitee(暂不可用)" ;;
+    3) mirror="gitee" ;;
     *) echo "无效选项"; exit 1 ;;
   esac
 fi
