@@ -54,7 +54,7 @@ if [[ -z "$mirror" ]]; then
   case "$mirror_sel" in
     1) mirror="official" ;;
     2) mirror="ghfast" ;;
-    3) mirror="gitee" ;;
+    3) mirror="gitee(暂不可用)" ;;
     *) echo "无效选项"; exit 1 ;;
   esac
 fi
