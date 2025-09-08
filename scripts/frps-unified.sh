@@ -5,7 +5,13 @@ set -eu
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
+SCRIPT_VERSION="还没有定义版本号"
+
+# 参数初始化，防止未定义变量报错
+auth=""
+mirror=""
 yes_flag=""
+
 # 参数解析
 while [[ $# -gt 0 ]]; do
   case $1 in
