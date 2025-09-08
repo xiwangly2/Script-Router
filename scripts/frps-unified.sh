@@ -112,11 +112,14 @@ esac
 
 # 下载源处理
 if [[ "$mirror" == "ghfast" ]]; then
-  BASE_URL="https://ghfast.top/https://github.com/fatedier/frp/releases/download/${VERSION_TAG}"
+  BASE_URL="https://ghfast.top/https://github.com/fatedier/frp/releases/download"
+  DOWNLOAD_URL="$BASE_URL/${VERSION_TAG}/frp_${VERSION}_linux_${ARCH}.tar.gz"
 elif [[ "$mirror" == "gitee" ]]; then
-  BASE_URL="https://gitee.com/lj47312/frp/releases/download/v${VERSION}"
+  BASE_URL="https://gitee.com/lj47312/frp/releases/download"
+  DOWNLOAD_URL="$BASE_URL/v${VERSION}/frp_${VERSION}_linux_${ARCH}.tar.gz"
 else
-  BASE_URL="https://github.com/fatedier/frp/releases/download/${VERSION_TAG}"
+  BASE_URL="https://github.com/fatedier/frp/releases/download"
+  DOWNLOAD_URL="$BASE_URL/${VERSION_TAG}/frp_${VERSION}_linux_${ARCH}.tar.gz"
 fi
 
 # 安装前输出版本和操作信息
@@ -131,6 +134,7 @@ echo -e "架构: $ARCH_UNAME ($ARCH)"
 echo -e "frps 版本: $VERSION_TAG"
 echo -e "安装位置: $INSTALL_PATH"
 echo -e "配置文件: $CONFIG_PATH"
+echo -e "下载链接: $DOWNLOAD_URL"
 echo -e "==============================="
 echo -e "\n即将安装/更新 frps，是否继续？ [y/N]"
 if [[ "$yes_flag" == "y" ]]; then
@@ -146,7 +150,7 @@ fi
 # 下载解压
 TMP_DIR=$(mktemp -d)
 cd "$TMP_DIR"
-curl -sS -o frp.tar.gz "${BASE_URL}/frp_${VERSION}_linux_${ARCH}.tar.gz"
+curl -sS -o frp.tar.gz "$DOWNLOAD_URL"
 tar -xzf frp.tar.gz
 
 # 用户友好提示
