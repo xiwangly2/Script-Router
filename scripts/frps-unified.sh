@@ -115,7 +115,7 @@ if [[ "$mirror" == "ghfast" ]]; then
   BASE_URL="https://ghfast.top/https://github.com/fatedier/frp/releases/download"
   DOWNLOAD_URL="$BASE_URL/${VERSION_TAG}/frp_${VERSION}_linux_${ARCH}.tar.gz"
 elif [[ "$mirror" == "gitee" ]]; then
-  BASE_URL="https://gitee.com/lj47312/frp/releases/download"
+  BASE_URL="https://gitee.com/mirrors/frp/releases/download"
   DOWNLOAD_URL="$BASE_URL/v${VERSION}/frp_${VERSION}_linux_${ARCH}.tar.gz"
 else
   BASE_URL="https://github.com/fatedier/frp/releases/download"
