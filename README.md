@@ -100,6 +100,7 @@ bash <(curl vs8.top/frps.sh)
 # bash <(curl vs8.top/frps-oidc.sh)
 # 统一配置（实验）
 # bash <(curl vs8.top/frps-unified.sh) -y --auth token --mirror ghfast
+# auth 可选 token oidc, mirror 可选 ghfast, github, gitee(暂未支持)
 ```
 
 对于需要加速下载的情况可以替换链接为镜像地址，例如 `https://github.com/fatedier/frp/releases/download/` 替换为 `https://ghfast.top/https://github.com/fatedier/frp/releases/download/` 
