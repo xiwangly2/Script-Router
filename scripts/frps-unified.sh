@@ -5,9 +5,8 @@ set -eu
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
+yes_flag=""
 # 参数解析
-auth=""
-mirror=""
 while [[ $# -gt 0 ]]; do
   case $1 in
     --auth)
@@ -17,6 +16,10 @@ while [[ $# -gt 0 ]]; do
     --mirror)
       mirror="$2"
       shift 2
+      ;;
+    -y|--yes)
+      yes_flag="y"
+      shift
       ;;
     *)
       shift
@@ -122,7 +125,7 @@ CONFIG_PATH="/etc/frp/frps.toml"
 echo "\nfrps 安装位置: $INSTALL_PATH"
 echo "frps 配置文件: $CONFIG_PATH"
 echo "\n即将安装/更新 frps，是否继续？ [y/N]"
-if [[ "$1" == "-y" || "$1" == "--yes" ]]; then
+if [[ "$yes_flag" == "y" ]]; then
   confirm="y"
 else
   read -r confirm
