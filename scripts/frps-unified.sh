@@ -150,7 +150,7 @@ fi
 # 下载解压
 TMP_DIR=$(mktemp -d)
 cd "$TMP_DIR"
-curl -sS -o frp.tar.gz "$DOWNLOAD_URL"
+curl -sSL -o frp.tar.gz "$DOWNLOAD_URL"
 tar -xzf frp.tar.gz
 
 # 用户友好提示
