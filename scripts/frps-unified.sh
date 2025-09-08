@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu
 
+# 设置 PATH 变量
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
 # 参数解析
 auth=""
 mirror=""
@@ -36,10 +40,12 @@ if [[ -z "$mirror" ]]; then
   echo "请选择下载源:"
   echo "1. 官方 github"
   echo "2. ghfast 镜像"
-  read -p "输入序号(1/2): " mirror_sel
+  echo "3. gitee"
+  read -p "输入序号(1/2/3): " mirror_sel
   case "$mirror_sel" in
     1) mirror="official" ;;
     2) mirror="ghfast" ;;
+    3) mirror="gitee" ;;
     *) echo "无效选项"; exit 1 ;;
   esac
 fi
@@ -70,22 +76,36 @@ else
   echo "frps 未安装，执行安装..."
 fi
 
-# 获取最新版本号
-VERSION_TAG=$(curl -sI https://github.com/fatedier/frp/releases/latest | grep -i location | sed -E 's/.*\/tag\/(v[0-9.]+).*/\1/')
-VERSION=${VERSION_TAG#v}
+# 获取最新版本号和下载地址
+if [[ "$mirror" == "gitee" ]]; then
+  LATEST_RELEASE=$(curl -s https://gitee.com/api/v5/repos/mvscode/frps-onekey/releases/latest | grep -oP '"tag_name":"\Kv[^"]+' | cut -c2-)
+  VERSION_TAG="v${LATEST_RELEASE}"
+  VERSION="${LATEST_RELEASE}"
+else
+  VERSION_TAG=$(curl -sI https://github.com/fatedier/frp/releases/latest | grep -i location | sed -E 's/.*\/tag\/(v[0-9.]+).*/\1/')
+  VERSION=${VERSION_TAG#v}
+fi
 
 # 架构检测
 ARCH_UNAME=$(uname -m)
 case "$ARCH_UNAME" in
-  x86_64)  ARCH=amd64 ;;
-  aarch64) ARCH=arm64 ;;
-  armv7l)  ARCH=arm ;;
-  *)       echo "Unsupported arch: $ARCH_UNAME"; exit 1 ;;
+  x86_64)      ARCH=amd64 ;;
+  i386|i486|i586|i686) ARCH=386 ;;
+  aarch64)     ARCH=arm64 ;;
+  armv7l)      ARCH=arm ;;
+  mips)        ARCH=mips ;;
+  mips64)      ARCH=mips64 ;;
+  mipsel)      ARCH=mipsle ;;
+  mips64el)    ARCH=mips64le ;;
+  riscv64)     ARCH=riscv64 ;;
+  *)           echo "Unsupported arch: $ARCH_UNAME"; exit 1 ;;
 esac
 
 # 下载源处理
 if [[ "$mirror" == "ghfast" ]]; then
   BASE_URL="https://ghfast.top/https://github.com/fatedier/frp/releases/download/${VERSION_TAG}"
+elif [[ "$mirror" == "gitee" ]]; then
+  BASE_URL="https://gitee.com/lj47312/frp/releases/download/v${VERSION}"
 else
   BASE_URL="https://github.com/fatedier/frp/releases/download/${VERSION_TAG}"
 fi
