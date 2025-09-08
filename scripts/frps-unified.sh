@@ -116,13 +116,29 @@ cd "$TMP_DIR"
 curl -sSL -o frp.tar.gz "${BASE_URL}/frp_${VERSION}_linux_${ARCH}.tar.gz"
 tar -xzf frp.tar.gz
 
+# 用户友好提示
+INSTALL_PATH="/usr/local/bin/frps"
+CONFIG_PATH="/etc/frp/frps.toml"
+echo "\nfrps 安装位置: $INSTALL_PATH"
+echo "frps 配置文件: $CONFIG_PATH"
+echo "\n即将安装/更新 frps，是否继续？ [y/N]"
+if [[ "$1" == "-y" || "$1" == "--yes" ]]; then
+  confirm="y"
+else
+  read -r confirm
+fi
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+  echo "已取消安装。"
+  exit 0
+fi
+
 # 部署二进制与配置
-mv -f "frp_${VERSION}_linux_${ARCH}/frps" /usr/local/bin/frps
-chmod +x /usr/local/bin/frps
+mv -f "frp_${VERSION}_linux_${ARCH}/frps" "$INSTALL_PATH"
+chmod +x "$INSTALL_PATH"
 mkdir -p /etc/frp
-if [ ! -f /etc/frp/frps.toml ]; then
+if [ ! -f "$CONFIG_PATH" ]; then
   if [[ "$auth" == "token" ]]; then
-    cat >/etc/frp/frps.toml <<EOF
+    cat >"$CONFIG_PATH" <<EOF
 bindAddr = "0.0.0.0"
 bindPort = 7000
 kcpBindPort = 7000
@@ -137,7 +153,7 @@ webServer.user = "xiwangly"
 webServer.password = "xxx"
 EOF
   else
-    cat >/etc/frp/frps.toml <<EOF
+    cat >"$CONFIG_PATH" <<EOF
 bindAddr = "0.0.0.0"
 bindPort = 7000
 kcpBindPort = 7000
@@ -160,7 +176,7 @@ auth.oidc.audience = ""
 EOF
   fi
 else
-  echo "/etc/frp/frps.toml 已存在，跳过生成。"
+  echo "$CONFIG_PATH 已存在，跳过生成。"
 fi
 
 # Init 系统检测
@@ -232,3 +248,9 @@ fi
 # 清理
 rm -rf "$TMP_DIR"
 
+echo "\n========== frps 一键安装脚本 =========="
+echo "认证方式: $auth"
+echo "下载源: $mirror"
+echo "架构: $ARCH_UNAME ($ARCH)"
+echo "frps 版本: $VERSION_TAG"
+echo "======================================="
