@@ -119,25 +119,47 @@ else
   BASE_URL="https://github.com/fatedier/frp/releases/download/${VERSION_TAG}"
 fi
 
-# 下载解压
-TMP_DIR=$(mktemp -d)
-cd "$TMP_DIR"
-curl -sSL -o frp.tar.gz "${BASE_URL}/frp_${VERSION}_linux_${ARCH}.tar.gz"
-tar -xzf frp.tar.gz
-
-# 用户友好提示
+# 安装前输出版本和操作信息
 INSTALL_PATH="/usr/local/bin/frps"
 CONFIG_PATH="/etc/frp/frps.toml"
-echo "\nfrps 安装位置: $INSTALL_PATH"
-echo "frps 配置文件: $CONFIG_PATH"
-echo "\n即将安装/更新 frps，是否继续？ [y/N]"
+echo -e "\n==============================="
+echo -e "frps 一键安装脚本"
+echo -e "版本: $SCRIPT_VERSION"
+echo -e "认证方式: $auth"
+echo -e "下载源: $mirror"
+echo -e "架构: $ARCH_UNAME ($ARCH)"
+echo -e "frps 版本: $VERSION_TAG"
+echo -e "安装位置: $INSTALL_PATH"
+echo -e "配置文件: $CONFIG_PATH"
+echo -e "==============================="
+echo -e "\n即将安装/更新 frps，是否继续？ [y/N]"
 if [[ "$yes_flag" == "y" ]]; then
   confirm="y"
 else
   read -r confirm
 fi
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-  echo "已取消安装。"
+  echo -e "已取消安装。"
+  exit 0
+fi
+
+# 下载解压
+TMP_DIR=$(mktemp -d)
+cd "$TMP_DIR"
+curl -sS -o frp.tar.gz "${BASE_URL}/frp_${VERSION}_linux_${ARCH}.tar.gz"
+tar -xzf frp.tar.gz
+
+# 用户友好提示
+echo -e "\nfrps 安装位置: $INSTALL_PATH"
+echo -e "frps 配置文件: $CONFIG_PATH"
+echo -e "\n即将安装/更新 frps，是否继续？ [y/N]"
+if [[ "$yes_flag" == "y" ]]; then
+  confirm="y"
+else
+  read -r confirm
+fi
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+  echo -e "已取消安装。"
   exit 0
 fi
 
@@ -257,9 +279,12 @@ fi
 # 清理
 rm -rf "$TMP_DIR"
 
-echo "\n========== frps 一键安装脚本 =========="
-echo "认证方式: $auth"
-echo "下载源: $mirror"
-echo "架构: $ARCH_UNAME ($ARCH)"
-echo "frps 版本: $VERSION_TAG"
-echo "======================================="
+echo -e "\n==============================="
+echo -e "frps 安装完成！"
+echo -e "认证方式: $auth"
+echo -e "下载源: $mirror"
+echo -e "架构: $ARCH_UNAME ($ARCH)"
+echo -e "frps 版本: $VERSION_TAG"
+echo -e "安装位置: $INSTALL_PATH"
+echo -e "配置文件: $CONFIG_PATH"
+echo -e "==============================="
