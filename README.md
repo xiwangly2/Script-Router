@@ -170,6 +170,8 @@ systemctl enable Script-Router
 systemctl start Script-Router
 # 查看状态
 systemctl status Script-Router
+# 查看日志
+journalctl -u Script-Router -f -n
 # upload shell script to Workdirectory
 curl http://localhost:28789
 # 卸载
