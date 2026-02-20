@@ -3,7 +3,7 @@ name: Build And Push Docker Image
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
       - 'dev'
     # Sequence of patterns matched against refs/tags
     tags:
