@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Here you may need to specify the URL again
-download_url="http://vs8.top/scripts/"
-# It is recommended to use the command 'bash <(curl -sSL vs8.top)' to execute directly.
+download_url="http://256369.xyz/scripts/"
+# It is recommended to use the command 'bash <(curl -sSL 256369.xyz)' to execute directly.
 
 # Check if curl or wget is installed on the system
 if command -v curl >/dev/null 2>&1; then
