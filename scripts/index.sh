@@ -34,7 +34,7 @@ esac
 
 # Download the script
 tmp_script=$(mktemp)
-if ! $download_command "$tmp_script" "http://256369.xyz/scripts/$shell_name"; then
+if ! $download_command "$tmp_script" "http://k7s.top/scripts/$shell_name"; then
   echo "Failed to download the script."
   rm "$tmp_script"
   exit 1

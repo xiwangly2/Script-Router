@@ -10,34 +10,34 @@
 不过练练手也不错
 
 > [!NOTE]  
-> 怀念`vs8.top`，这个域名被注册局暂停解析了，目前域名托管商也没办法申诉，原因是重定向滥用，所以暂时换成了`256369.xyz`
+> 怀念`vs8.top`，这个域名被注册局暂停解析了，目前域名托管商也没办法申诉，原因是重定向滥用，所以暂时换成了`k7s.top`
 
 ## 开始
 
 简短的一句话命令，如果系统上没有 bash 的话，可以使用 sh 或者 zsh 等等 shell 代替，使用 sh 执行可能有部分命令用不了
 ```bash
-bash <(curl 256369.xyz)
+bash <(curl k7s.top)
 ```
 或者使用 wget ：
 ```bash
-bash <(wget -qO- 256369.xyz)
+bash <(wget -qO- k7s.top)
 ```
 
 对于 sudo 提升的权限
 ```bash
-sudo bash -c "$(curl -fsSL 256369.xyz)"
+sudo bash -c "$(curl -fsSL k7s.top)"
 ```
 
 更通用的方法
 ```bash
-curl -fsSL 256369.xyz -o main.sh
+curl -fsSL k7s.top -o main.sh
 chmod +x main.sh
 bash main.sh
 ```
 
 ## 功能
 ```bash
-[root@localhost ~] bash <(curl -sL 256369.xyz)
+[root@localhost ~] bash <(curl -sL k7s.top)
 请输入选项：
 -1. 执行快捷菜单(一些实用功能)
 1. 执行arch.sh脚本(查看架构)
@@ -53,7 +53,7 @@ bash main.sh
 1
 /usr/sbin/setenforce: SELinux is disabled
 
-[root@localhost ~] bash <(curl -sSL 256369.xyz)
+[root@localhost ~] bash <(curl -sSL k7s.top)
 请输入选项：
 -1. 执行快捷菜单(一些实用功能)
 1. 执行arch.sh脚本(查看架构)
@@ -98,11 +98,11 @@ Source setup completed.
 frps
 ```bash
 # token 配置
-bash <(curl 256369.xyz/frps.sh)
+bash <(curl k7s.top/frps.sh)
 # oidc 配置
-# bash <(curl 256369.xyz/frps-oidc.sh)
+# bash <(curl k7s.top/frps-oidc.sh)
 # 统一配置（实验）
-# bash <(curl 256369.xyz/frps-unified.sh) -y --auth token --mirror ghfast
+# bash <(curl k7s.top/frps-unified.sh) -y --auth token --mirror ghfast
 # auth 可选 token oidc, mirror 可选 ghfast, github, gitee(暂未支持)
 ```
 
@@ -110,7 +110,7 @@ bash <(curl 256369.xyz/frps.sh)
 
 frpc
 ```bash
-bash <(curl 256369.xyz/frpc.sh)
+bash <(curl k7s.top/frpc.sh)
 ```
 
 卸载 frps
