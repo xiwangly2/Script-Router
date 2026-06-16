@@ -92,7 +92,8 @@ if [ -d /run/systemd/system ]; then
   cat >/etc/systemd/system/frpc.service <<EOF
 [Unit]
 Description=frpc service
-After=network.target
+After = network-online.target syslog.target
+Wants = network-online.target
 
 [Service]
 Type=simple
