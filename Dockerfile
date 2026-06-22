@@ -4,21 +4,30 @@ FROM golang:1.24.3 AS builder
 # 设置工作目录为 /app
 WORKDIR /app
 
+COPY go.mod go.sum ./
+RUN go mod download
+
 # 复制Go程序文件到容器中
 COPY . .
 
 # 构建Go程序
-RUN CGO_ENABLED=0 go build -o "Script-Router"
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "Script-Router" .
 
 # 阶段二：运行阶段
 FROM scratch
 
+WORKDIR /app
+
 # 从第一阶段中复制生成的可执行文件和脚本到当前容器
 COPY --from=builder "/app/Script-Router" "/app/Script-Router"
 COPY --from=builder "/app/scripts" "/app/scripts"
+COPY --from=builder "/app/index.html" "/app/index.html"
+
+USER 65532:65532
 
 # 暴露容器的端口号
 EXPOSE 8080
 
 # 定义启动容器时运行的命令
-CMD ["/app/Script-Router"]
+ENTRYPOINT ["/app/Script-Router"]
+CMD ["-addr", "0.0.0.0:8080"]
