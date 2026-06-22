@@ -183,5 +183,11 @@ curl http://localhost:28789
 #rm -f /etc/systemd/system/Script-Router.service
 ```
 
+使用 docker 部署
+
+```bash
+docker run -d --restart=always --name script-router -p 28789:8080 ghcr.io/xiwangly2/script-router:main
+```
+
 参考
 - https://github.com/SuperManito/LinuxMirrors
