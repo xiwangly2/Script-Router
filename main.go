@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"os/signal"
@@ -40,21 +41,17 @@ func getFileContent(filePath string) ([]byte, error) {
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	requestSource := getRequestSource(r)
 
-	cleanPath := path.Clean(r.URL.Path)
-	if strings.Contains(cleanPath, "..") {
+	if hasParentPathSegment(r.URL.Path) {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Invalid path")
 		return
 	}
 
-	scriptName := filepath.Base(cleanPath)
-	scriptPath := filepath.Join("scripts", scriptName)
+	cleanPath := path.Clean(r.URL.Path)
 
 	switch requestSource {
 	case "curl", "wget":
-		if cleanPath == "/" {
-			scriptPath = filepath.Join("scripts", "index.sh")
-		}
+		scriptPath, scriptName := scriptTarget(cleanPath, "index.sh")
 		scriptContent, err := getFileContent(scriptPath)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
@@ -62,20 +59,18 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/octet-stream")
-		w.Header().Set("Content-Disposition", "attachment; filename="+scriptName)
-		w.Write(scriptContent)
+		w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": scriptName}))
+		_, _ = w.Write(scriptContent)
 	case "powershell":
-		if cleanPath == "/" {
-			scriptPath = filepath.Join("scripts", "index.ps1")
-		}
+		scriptPath, _ := scriptTarget(cleanPath, "index.ps1")
 		content, err := getFileContent(scriptPath)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "Internal Server Error")
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "File Not Found")
 			return
 		}
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write(content)
+		_, _ = w.Write(content)
 	default:
 		content, err := getFileContent("index.html")
 		if err != nil {
@@ -83,19 +78,36 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "Internal Server Error")
 			return
 		}
-		w.Header().Set("Content-Type", "text/html")
-		w.Write(content)
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write(content)
 	}
 }
 
+func hasParentPathSegment(urlPath string) bool {
+	for _, segment := range strings.Split(urlPath, "/") {
+		if segment == ".." {
+			return true
+		}
+	}
+	return false
+}
+
+func scriptTarget(cleanPath, indexFile string) (string, string) {
+	scriptName := filepath.Base(cleanPath)
+	if cleanPath == "/" || cleanPath == "." {
+		scriptName = indexFile
+	}
+	return filepath.Join("scripts", scriptName), scriptName
+}
+
 func getRequestSource(r *http.Request) string {
-	agent := r.Header.Get("User-Agent")
+	agent := strings.ToLower(r.Header.Get("User-Agent"))
 	switch {
 	case strings.Contains(agent, "curl"):
 		return "curl"
-	case strings.Contains(agent, "Wget"):
+	case strings.Contains(agent, "wget"):
 		return "wget"
-	case strings.Contains(agent, "WindowsPowerShell"):
+	case strings.Contains(agent, "windowspowershell"), strings.Contains(agent, "powershell"):
 		return "powershell"
 	default:
 		return "browser"
