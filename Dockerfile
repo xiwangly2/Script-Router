@@ -11,10 +11,11 @@ COPY . .
 RUN go build -o "Script-Router"
 
 # 阶段二：运行阶段
-FROM alpine:latest
+FROM scratch
 
-# 从第一阶段中复制生成的可执行文件到当前容器
+# 从第一阶段中复制生成的可执行文件和脚本到当前容器
 COPY --from=builder "/app/Script-Router" "/app/Script-Router"
+COPY --from=builder "/scripts" "/scripts"
 
 # 暴露容器的端口号
 EXPOSE 8080
