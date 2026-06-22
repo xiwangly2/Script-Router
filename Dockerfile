@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # 构建Go程序
-RUN go build -o "Script-Router"
+RUN CGO_ENABLED=0 go build -o "Script-Router"
 
 # 阶段二：运行阶段
 FROM scratch
