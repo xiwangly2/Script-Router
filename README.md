@@ -37,13 +37,14 @@ curl -A "WindowsPowerShell/7.4" https://k7s.top/ | head
 curl -A "Mozilla/5.0" https://k7s.top/ | head
 ```
 
-原理：Workers / Pages 不用构建，`wrangler.toml` 里 `[assets] directory = "./"`
-+ `run_worker_first = true`，直接读仓库根目录的 `index.html` 和 `scripts/`；
-Vercel / Netlify 是 Edge 运行时读不到磁盘文件，构建时 `tools/build-assets.mjs`
-（零依赖）把 `index.html` + `scripts/*.sh|*.ps1` 生成 `dist/` 和
-`src/generated-assets.ts` 再嵌入。不要把 `[build]` 写进 `wrangler.toml`，
-Pages 会拒绝它，构建命令只放在各平台自己的配置里（`vercel.json` /
-`netlify.toml` / Pages Dashboard）。
+原理：构建时 `tools/build-assets.mjs`（零依赖）把 `index.html` +
+`scripts/*.sh|*.ps1` 生成 `dist/` 和 `src/generated-assets.ts`。
+Workers 的 `wrangler.toml` 里 `[build] command = "npm run build"` +
+`[assets] directory = "./dist"` + `run_worker_first = true`；
+`[assets]` 绝不能指向 `"./"`，否则 Wrangler 会把整个仓库（含
+`node_modules/workerd`，155 MiB，超单文件 25 MiB 上限）都当成
+assets 上传。Pages 的构建命令在 Dashboard 里填，不用写进
+`wrangler.toml`（Pages 会拒绝 `[build]`）。
 
 
 突然发现用 PHP 顺带路由一下也不错
