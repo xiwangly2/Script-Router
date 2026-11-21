@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# 兜底：没命中函数的请求也走函数（路由在 src/router.ts 里做 UA 分流）
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/index"
+  status = 200
+  force = false
