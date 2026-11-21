@@ -1,6 +1,51 @@
 # Script-Router
 一个用 Go 语言写的脚本路由器（例如快捷拉取执行自用脚本）
 
+## 开箱即用（Serverless）
+
+选仓库 / 填仓库 URL 就能部署，不用手动复制文件、不用改代码。
+路由逻辑在 `src/router.ts`，各平台入口只是换一种读文件的方式，
+Go 原服务（`main.go` + `Dockerfile`）完全不动，继续能用。
+
+| 平台 | 怎么选 | 需要填的 |
+|---|---|---|
+| **Cloudflare Workers（主推）** | Workers → Create → 选这个仓库 | 什么都不用填，`wrangler.toml` 已配好 |
+| **Cloudflare Pages** | Pages → Create → 选这个仓库 | Build command：`npm run build`；Output directory：`dist` |
+| **Vercel** | Vercel → Add New Project → 选这个仓库 | 什么都不用填，`vercel.json` 已配好 |
+| **Netlify** | Netlify → Add new site → 选这个仓库 | 什么都不用填，`netlify.toml` 已配好 |
+| **Cloud Run / Docker** | 容器部署 | 原 `Dockerfile`，设 `PORT`，启动参数 `-addr 0.0.0.0:$PORT` |
+
+本地 / 命令行部署：
+
+```bash
+npm install
+npm run build        # 生成 dist/ + src/generated-assets.ts（Vercel/Netlify 用）
+npx wrangler deploy  # Workers
+npm run deploy:pages # Pages
+```
+
+自动部署：推到 `main` 就自动部署，见 `.github/workflows/deploy-workers.yml`
+和 `deploy-pages.yml`，只需在仓库 Secrets 里配 `CLOUDFLARE_API_TOKEN`、
+`CLOUDFLARE_ACCOUNT_ID`。
+
+验证（部署后）：
+
+```bash
+curl -A "curl/8.0.1" https://k7s.top/ | head
+curl -A "wget/1.21" https://k7s.top/arch.sh | head
+curl -A "WindowsPowerShell/7.4" https://k7s.top/ | head
+curl -A "Mozilla/5.0" https://k7s.top/ | head
+```
+
+原理：Workers / Pages 不用构建，`wrangler.toml` 里 `[assets] directory = "./"`
++ `run_worker_first = true`，直接读仓库根目录的 `index.html` 和 `scripts/`；
+Vercel / Netlify 是 Edge 运行时读不到磁盘文件，构建时 `tools/build-assets.mjs`
+（零依赖）把 `index.html` + `scripts/*.sh|*.ps1` 生成 `dist/` 和
+`src/generated-assets.ts` 再嵌入。不要把 `[build]` 写进 `wrangler.toml`，
+Pages 会拒绝它，构建命令只放在各平台自己的配置里（`vercel.json` /
+`netlify.toml` / Pages Dashboard）。
+
+
 突然发现用 PHP 顺带路由一下也不错
 
 这个项目是我突发奇想折腾出来的，当时玩的虚拟机实在太多了，一个一个的改东西太麻烦了，于是索性自己手搓了一个Shell
