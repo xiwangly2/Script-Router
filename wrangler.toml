@@ -1,0 +1,27 @@
+name = "script-router"
+main = "src/worker.ts"
+compatibility_date = "2026-11-21"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers 选仓库即用：不需要构建，assets 就是仓库根目录，
+# index.html 和 scripts/ 本来就在那，Worker 通过 ASSETS 读它们。
+# run_worker_first 很关键：默认情况下命中静态文件会直接返回、不跑 Worker，
+# 那样浏览器访问 /arch.sh 会拿到脚本而不是 index.html，UA 分流就失效了。
+[assets]
+directory = "./"
+binding = "ASSETS"
+run_worker_first = true
+
+# Pages 用的输出目录（Workers 会忽略它）：Pages Dashboard 的
+# Build command 填 `npm run build`，它会生成 dist/，Pages 再从 dist 读。
+# 注意 wrangler.toml 里不要再加 [build]，Pages 会拒绝 [build] 配置。
+pages_build_output_dir = "dist"
+
+# 自定义域名 k7s.top：在 Dashboard -> Workers -> script-router -> Settings -> Domains 里绑，
+# 或取消下面注释（域名需已托管在 Cloudflare）：
+# routes = [
+#   { pattern = "k7s.top", custom_domain = true },
+# ]
+
+[observability]
+enabled = true
