@@ -2,3 +2,11 @@ out/
 Script-Router
 *.exe
 *.log
+# Serverless
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+.vercel/
+.netlify/
+src/generated-assets.ts
