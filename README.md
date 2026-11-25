@@ -50,16 +50,31 @@ Workers 上生效，其他平台还是只走脚本路由。
 脚本名）的就当短码查。查不到返回 404，不回首页；过期返回 410。
 随机码默认 4 位，字符集去掉 `0/O、1/l/I`，手动输入不容易看错。
 
-启用（只需一次，D1/KV 的 id 没法只靠选仓库自动出来）：
+启用（别人 fork 后也不用改 `wrangler.toml`）：
 
 ```bash
-npx wrangler d1 create script-router-links
-npx wrangler d1 execute script-router-links --file migrations/0001_create_links.sql
-npx wrangler kv namespace create SHORT_CACHE
+npx wrangler deploy   # 第一次部署，Wrangler 自动创建 D1 库和 KV 命名空间
+npx wrangler d1 migrations apply script-router-links --remote  # 建表，只需一次
 npx wrangler secret put SHORT_TOKEN   # 创建用的 token，不写进仓库
 ```
 
-再把 `wrangler.toml` 里短链接那段取消注释、填上两个 id，部署一次。
+不用写死 id 的原因：`database_id` / KV 的 `id` 是每个账号自己的资源
+编号，写进仓库别人就得改文件、还会跟你的资源撞。Wrangler 支持自动
+创建：绑定里只写名字、不写 id，部署时自动建资源【官方文档】。
+
+三层注入要分清，别混用：
+
+| 东西 | 写哪 | 能进仓库吗 |
+|---|---|---|
+| 非敏感配置，如 Worker 名、域名 | `wrangler.toml` 的 `[vars]` / 顶层字段 | 能，明文 |
+| 敏感值，如 `SHORT_TOKEN` | `wrangler secret put SHORT_TOKEN`（线上）或 `.dev.vars`（本地，复制 `.dev.vars.example`） | 不能，加密存 Cloudflare |
+| D1/KV 的 id | 不写，部署时自动创建；已有资源想复用时才手动填回 `wrangler.toml` | 自己的 id 可以填，但别人复用时要改 |
+
+另外还有一种 `${VAR}` 写法：Wrangler 会读 `.env` / shell 环境变量
+去替换 `wrangler.toml` 里的 `${D1_DATABASE_ID}`，适合本地命令行部署、
+已有资源的场景；但 Workers Builds（选仓库自动部署）时 `.env` 不在
+仓库里、Dashboard 的构建变量也只在构建时有效，所以这条路不适合
+“选仓库即用”，这里不用它，默认走自动创建。
 
 用：
 
