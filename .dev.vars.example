@@ -1,0 +1,4 @@
+# 本地开发用：复制成 .dev.vars 再填值，.dev.vars 已在 .gitignore 里，不会进仓库。
+# SHORT_TOKEN 是创建短链接的 token，线上用 `npx wrangler secret put SHORT_TOKEN` 设置，
+# 不要写进 wrangler.toml 的 [vars] 里（[vars] 是明文、会随代码部署）。
+SHORT_TOKEN=换成你自己的随机字符串
