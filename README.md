@@ -37,6 +37,57 @@ curl -A "WindowsPowerShell/7.4" https://k7s.top/ | head
 curl -A "Mozilla/5.0" https://k7s.top/ | head
 ```
 
+## 短链接（Workers 专用，根路径）
+
+`k7s.top/aB3x` 这种 4 位短链，印广告、贴海报、口头报都够短。
+D1 是真数据（`code, target, expires_at, clicks`），KV 只做跳转缓存，
+过期自动清。Pages / Vercel / Netlify 没有 D1/KV，所以短链接只在
+Workers 上生效，其他平台还是只走脚本路由。
+
+为什么根路径不跟脚本撞：脚本永远带后缀（`/arch.sh`、`/index.ps1`），
+短码永远不带点（单段、3~32 位 `[A-Za-z0-9_-]`）。Worker 先看有没有点，
+有点的走脚本，没点的、不是保留词（`arch`、`install`、`index`、`api` 等
+脚本名）的就当短码查。查不到返回 404，不回首页；过期返回 410。
+随机码默认 4 位，字符集去掉 `0/O、1/l/I`，手动输入不容易看错。
+
+启用（只需一次，D1/KV 的 id 没法只靠选仓库自动出来）：
+
+```bash
+npx wrangler d1 create script-router-links
+npx wrangler d1 execute script-router-links --file migrations/0001_create_links.sql
+npx wrangler kv namespace create SHORT_CACHE
+npx wrangler secret put SHORT_TOKEN   # 创建用的 token，不写进仓库
+```
+
+再把 `wrangler.toml` 里短链接那段取消注释、填上两个 id，部署一次。
+
+用：
+
+```bash
+# 创建：默认 30 天，可改 1h / 7d / 30d / permanent，slug 可自定义
+curl -X POST https://k7s.top/api/links \
+  -H "Authorization: Bearer <SHORT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/活动页", "expires_in": "permanent"}'
+# -> {"code": "aB3x", "short": "https://k7s.top/aB3x", ...}
+
+curl -X POST https://k7s.top/api/links \
+  -H "Authorization: Bearer <SHORT_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/限时", "slug": "sale", "expires_in": "7d"}'
+
+# 访问：浏览器直接跳，curl 要加 -L 才跟随 302
+curl -L https://k7s.top/aB3x
+# 查 / 删 / 列表（都要 token）
+curl -H "Authorization: Bearer <SHORT_TOKEN>" https://k7s.top/api/links/aB3x
+curl -X DELETE -H "Authorization: Bearer <SHORT_TOKEN>" https://k7s.top/api/links/aB3x
+curl -H "Authorization: Bearer <SHORT_TOKEN>" "https://k7s.top/api/links?limit=50"
+```
+
+目标只允许 `http(s)`，不允许指回本站、不允许内网地址；没配
+`SHORT_TOKEN` 时创建接口是开放的，尽快配上，否则任何人都能往你
+域名上挂链。
+
 原理：构建时 `tools/build-assets.mjs`（零依赖）把 `index.html` +
 `scripts/*.sh|*.ps1` 生成 `dist/` 和 `src/generated-assets.ts`。
 Workers 的 `wrangler.toml` 里 `[build] command = "npm run build"` +
