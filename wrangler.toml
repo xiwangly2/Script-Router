@@ -26,20 +26,26 @@ run_worker_first = true
 # wrangler.toml 读构建命令，Pages 的 Build command / Output directory
 # 在 Dashboard 里填（Build command: npm run build，Output: dist）。
 
-# 短链接（D1+KV，根路径 /xxxx）：默认是注释掉的，不配也能部署，
-# 脚本路由照常工作，短链接只会返回 503。想启用时先跑下面三条命令，
-# 把输出的 id 填进来再取消注释，最后部署一次：
-#   npx wrangler d1 create script-router-links
-#   npx wrangler d1 execute script-router-links --file migrations/0001_create_links.sql
-#   npx wrangler kv namespace create SHORT_CACHE
-# 创建 token（Secret，不写进仓库）：npx wrangler secret put SHORT_TOKEN
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "script-router-links"
-# database_id = "填 d1 create 输出的 database_id"
-# [[kv_namespaces]]
-# binding = "SHORT_CACHE"
-# id = "填 kv namespace create 输出的 id"
+# 短链接（D1+KV，根路径 /xxxx）：id 不写死，别人 fork 后也能直接部署。
+# 原理是 Wrangler 自动创建资源：绑定里只写名字、不写 id，部署时
+# Wrangler 会自动建库/命名空间（以 Worker 名为前缀），本地部署还会把
+# id 写回这个文件；经 Dashboard/Git 部署时 id 只在 Dashboard 里能看到，
+# 仓库里不用改。官方说法：add bindings without resource IDs, resources
+# will be created with the name of your worker as the prefix.
+# 部署后还要跑一次建表（自动创建只建空库，不跑 SQL）：
+#   npx wrangler d1 migrations apply script-router-links --remote
+# 创建 token（Secret，不写进仓库，运行时 env.SHORT_TOKEN）：
+#   npx wrangler secret put SHORT_TOKEN
+# 已有自己的 D1/KV 想复用时，才需要手动把 id 填回来（见下两行注释）；
+# 没填 id 时不要自己先跑 d1/kv create，否则会建出两套资源。
+[[d1_databases]]
+binding = "DB"
+database_name = "script-router-links"
+migrations_dir = "migrations"
+# database_id = "已有库才填，填了就不用自动创建"
+[[kv_namespaces]]
+binding = "SHORT_CACHE"
+# id = "已有命名空间才填，填了就不用自动创建"
 
 # 自定义域名 k7s.top：在 Dashboard -> Workers -> script-router -> Settings -> Domains 里绑，
 # 或取消下面注释（域名需已托管在 Cloudflare）：
