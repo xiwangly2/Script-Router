@@ -26,6 +26,21 @@ run_worker_first = true
 # wrangler.toml 读构建命令，Pages 的 Build command / Output directory
 # 在 Dashboard 里填（Build command: npm run build，Output: dist）。
 
+# 短链接（D1+KV，根路径 /xxxx）：默认是注释掉的，不配也能部署，
+# 脚本路由照常工作，短链接只会返回 503。想启用时先跑下面三条命令，
+# 把输出的 id 填进来再取消注释，最后部署一次：
+#   npx wrangler d1 create script-router-links
+#   npx wrangler d1 execute script-router-links --file migrations/0001_create_links.sql
+#   npx wrangler kv namespace create SHORT_CACHE
+# 创建 token（Secret，不写进仓库）：npx wrangler secret put SHORT_TOKEN
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "script-router-links"
+# database_id = "填 d1 create 输出的 database_id"
+# [[kv_namespaces]]
+# binding = "SHORT_CACHE"
+# id = "填 kv namespace create 输出的 id"
+
 # 自定义域名 k7s.top：在 Dashboard -> Workers -> script-router -> Settings -> Domains 里绑，
 # 或取消下面注释（域名需已托管在 Cloudflare）：
 # routes = [
